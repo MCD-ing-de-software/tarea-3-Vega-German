@@ -4,7 +4,6 @@ import unittest
 
 from src.statistics_utils import StatisticsUtils
 
-
 class TestStatisticsUtils(unittest.TestCase):
     """Test suite for StatisticsUtils class."""
 
@@ -46,6 +45,7 @@ class TestStatisticsUtils(unittest.TestCase):
         # La tolerancia relativa y absoluta permite errores pequeños de punto flotante
         npt.assert_allclose(result, expected, rtol=1e-10, atol=1e-10)
 
+    @unittest.expectedFailure
     def test_moving_average_basic_case(self):
         """Test que verifica que el método moving_average calcula correctamente la media móvil
         de una secuencia numérica para un caso básico.
@@ -56,6 +56,7 @@ class TestStatisticsUtils(unittest.TestCase):
         - Verificar que el resultado es correcto (ej: [1.5, 2.5, 3.5] para el array dado) (usar numpy.testing.assert_allclose() para comparar arrays de NumPy - esto es mejor que unittest porque maneja la comparación de arrays numéricos con tolerancia para errores de punto flotante)
         - Verificar que el resultado tiene la forma (shape) esperada (usar self.assertEqual para comparar tuplas de .shape - comparación simple, unittest es suficiente)
         """
+        print("hola mundo")
 
     def test_moving_average_raises_for_invalid_window(self):
         """Test que verifica que el método moving_average lanza un ValueError cuando

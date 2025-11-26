@@ -5,6 +5,9 @@ This small project contains two Python classes that are useful in data
 science workflows and are well suited for practicing **unit testing**
 with `pytest`.
 
+## Alumno
+German Vega Meza
+
 ## Project structure
 
 - `src/data_cleaner.py`  
