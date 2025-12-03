@@ -167,6 +167,11 @@ class TestDataCleaner(unittest.TestCase):
         - Llamar a trim_strings con una columna numérica (ej: "age")
         - Verificar que se lanza un TypeError (usar self.assertRaises)
         """
+        dfIn = make_sample_df()
+        cleaner = DataCleaner()
+        
+        with self.assertRaises(TypeError):
+            cleaner.trim_strings(dfIn, ["age"])
 
     def test_remove_outliers_iqr_removes_extreme_values(self):
         """Test que verifica que el método remove_outliers_iqr elimina correctamente los
@@ -179,6 +184,24 @@ class TestDataCleaner(unittest.TestCase):
         - Verificar que el valor extremo (120) fue eliminado del resultado (usar self.assertNotIn para verificar que 120 no está en los valores de la columna)
         - Verificar que al menos uno de los valores no extremos (25 o 35) permanece en el resultado (usar self.assertIn para verificar que está presente)
         """
+        dfIn = pd.DataFrame({
+            "age": [10, 20, 30, 120]
+        })
+        
+        outlier_value = 120
+        inlier_value = 20
+        cleaner = DataCleaner()
+
+        dfResult = cleaner.remove_outliers_iqr(dfIn, "age", factor=1.5)
+        
+        # Extraemos los valores de la columna 'age' como una lista
+        listAges = dfResult["age"].tolist()
+        
+        # Verificar que el valor extremo (120) fue eliminado del resultado
+        self.assertNotIn(outlier_value, listAges, msg=f"El outlier {outlier_value} no fue eliminado.")
+
+        # Verificar que al menos uno de los valores no extremos (10,20,30) permanece en el resultado
+        self.assertIn(inlier_value, listAges, msg=f"El valor {inlier_value} fue eliminado de forma incorrecta.")
 
     def test_remove_outliers_iqr_raises_keyerror_for_missing_column(self):
         """Test que verifica que el método remove_outliers_iqr lanza un KeyError cuando
@@ -189,6 +212,11 @@ class TestDataCleaner(unittest.TestCase):
         - Llamar a remove_outliers_iqr con una columna que no existe (ej: "salary")
         - Verificar que se lanza un KeyError (usar self.assertRaises)
         """
+        dfIn = make_sample_df()
+        cleaner = DataCleaner()
+        
+        with self.assertRaises(KeyError):
+            cleaner.remove_outliers_iqr(dfIn, "salary")
 
     def test_remove_outliers_iqr_raises_typeerror_for_non_numeric_column(self):
         """Test que verifica que el método remove_outliers_iqr lanza un TypeError cuando
@@ -199,7 +227,11 @@ class TestDataCleaner(unittest.TestCase):
         - Llamar a remove_outliers_iqr con una columna de texto (ej: "city")
         - Verificar que se lanza un TypeError (usar self.assertRaises)
         """
-
+        dfIn = make_sample_df()
+        cleaner = DataCleaner()
+        
+        with self.assertRaises(TypeError):
+            cleaner.remove_outliers_iqr(dfIn, "city")
 
 if __name__ == "__main__":
     unittest.main()
