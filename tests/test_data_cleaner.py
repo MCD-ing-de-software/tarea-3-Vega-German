@@ -105,6 +105,11 @@ class TestDataCleaner(unittest.TestCase):
         - Llamar a drop_invalid_rows con una columna que no existe (ej: "does_not_exist")
         - Verificar que se lanza un KeyError (usar self.assertRaises)
         """
+        dfIn = make_sample_df()
+        cleaner = DataCleaner()
+        
+        with self.assertRaises(KeyError):
+            cleaner.drop_invalid_rows(dfIn, ["name","adress"])
 
     def test_trim_strings_strips_whitespace_without_changing_other_columns(self):
         """Test que verifica que el método trim_strings elimina correctamente los espacios
@@ -118,6 +123,40 @@ class TestDataCleaner(unittest.TestCase):
         - Verificar que en el DataFrame resultante los valores de "name" no tienen espacios al inicio/final (usar self.assertEqual para comparar valores específicos como strings individuales - unittest es suficiente)
         - Verificar que las columnas no especificadas (ej: "city") permanecen sin cambios (si comparas Series completas, usar pandas.testing.assert_series_equal() ya que maneja mejor los índices y tipos de Pandas; si comparas valores individuales, self.assertEqual es suficiente)
         """
+        dfIn = pd.DataFrame({
+            "name": ["  Alice  ", "  Bob  ", "Carol"],
+            "city": ["SCL", "LPZ", "SCL"],
+            "age": [25, 30, 35]
+        })
+        name_0_with_space = dfIn.loc[0, "name"]
+        name_2_with_space = dfIn.loc[2, "name"]
+        cleaner = DataCleaner()
+        
+        dfResult = cleaner.trim_strings(dfIn, ["name"])
+        
+        # Verificar que el DataFrame original no fue modificado
+        self.assertEqual(dfIn.loc[0, "name"], 
+                         name_0_with_space,
+                         msg="El DataFrame original fue modificado en la función.")
+        
+        self.assertEqual(dfIn.loc[2, "name"], 
+                         name_2_with_space,
+                         msg="El DataFrame original fue modificado en la función.")
+                
+        # Verificar que en el DataFrame resultante los valores de "name" no tienen espacios al inicio/final 
+        self.assertEqual(dfResult.loc[0, "name"], 
+                         "Alice",
+                         msg="El valor en la columna 'name' no se limpió correctamente.")
+        
+        self.assertEqual(dfResult.loc[2, "name"], 
+                         "Carol",
+                         msg="El valor en la columna 'name' no se limpió correctamente.")
+            
+        # Verificar que las columnas no especificadas (ej: "city") permanecen sin cambios 
+        pdt.assert_series_equal(dfResult["city"], 
+                            dfIn["city"], 
+                            check_names=True)
+        
 
     def test_trim_strings_raises_typeerror_for_non_string_column(self):
         """Test que verifica que el método trim_strings lanza un TypeError cuando
